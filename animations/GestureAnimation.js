@@ -13,29 +13,41 @@ import {
 const images = new Array(6).fill('https://images.unsplash.com/photo-1556740749-887f6717d7e4');
 
 const App = () => {
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const animatePadding = scrollY.interpolate({
+    inputRange: [0, 75],
+    outputRange: [75, 24],
+    extrapolate: "clamp"
+  });
 
   const { width: windowWidth } = useWindowDimensions();
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.scrollContainer}>
         <ScrollView
-          horizontal={true}
+          stickyHeaderIndices={[0]}
           style={styles.scrollViewStyle}
-          pagingEnabled
+          scrollEventThrottle={16}
           showsHorizontalScrollIndicator={false}
-          onScroll={Animated.event([
-            {
-              nativeEvent: {
-                contentOffset: {
-                  x: scrollX
-                }
-              }
-            }
-          ])}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }])}
           scrollEventThrottle={1}
         >
+          <View style={styles.tabButtonContainer}>
+            <Animated.View
+              style={{
+                flex : 1,
+                flexDirection : "row",
+                paddingHorizontal: animatePadding
+              }}
+            >
+              <Animated.View style={styles.tab1}>
+                <Text>Tab 1</Text>
+              </Animated.View>
+              <Animated.View style={styles.tab2}>
+                <Text>Tab 2</Text>
+              </Animated.View>
+            </Animated.View>
+          </View>
           {images.map((image, imageIndex) => {
             return (
               <View
@@ -53,40 +65,27 @@ const App = () => {
             );
           })}
         </ScrollView>
-        <View style={styles.indicatorContainer}>
-          {images.map((image, imageIndex) => {
-            const width = scrollX.interpolate({
-              inputRange: [
-                windowWidth * (imageIndex - 1),
-                windowWidth * imageIndex,
-                windowWidth * (imageIndex + 1)
-              ],
-              outputRange: [8, 16, 8],
-              extrapolate: "clamp"
-            });
-            return (
-              <Animated.View
-                key={imageIndex}
-                style={[styles.normalDot, { width }]}
-              />
-            );
-          })}
-        </View>
-      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+    flex: 1
   },
   scrollContainer: {
     height: 300,
     alignItems: "center",
     justifyContent: "center"
+  },
+  scrollViewStyle : {
+    flex: 1,
+    backgroundColor : "grey"
+  },
+  tabButtonContainer : {
+    height : 60,
+    flexDirection : "row",
+    backgroundColor : "orange"
   },
   card: {
     flex: 1,
@@ -102,6 +101,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 8,
     borderRadius: 5
+  },
+  tab1 : {
+    flex : 1,
+    backgroundColor : "blue"
+  },
+  tab2 : {
+    flex : 1,
+    backgroundColor : "red"
   },
   infoText: {
     color: "white",
