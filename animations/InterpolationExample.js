@@ -22,6 +22,10 @@ export default class InterpolationExample extends Component {
   render() {
     return (
       <View style={styles.container}>
+        {/*
+        <View komponentini anime etmek istersek "Attempted to assign to readonly property" hatasi aliriz
+        cunku anime edilebilir view'lar icin RN ekstra ayarlamalar yapmaktadir. 
+        */}
         <Animated.View
           style={[
             styles.square,
@@ -31,8 +35,7 @@ export default class InterpolationExample extends Component {
                 {
                   translateY: this.state.startValue.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [150, 0], // 0 : 150, 0.5 : 75, 1 : 0
-                    extrapolate: 'clamp',
+                    outputRange: [300, 0], // 0 : 150, 0.5 : 75, 1 : 0
                   }),
                 },
               ],

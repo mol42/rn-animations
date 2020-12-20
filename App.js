@@ -1,39 +1,47 @@
-import React from 'react';
-import {
-  NativeModules,
-  LayoutAnimation,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {Component} from 'react';
+import {View, Animated, StyleSheet} from 'react-native';
 
-const { UIManager } = NativeModules;
+export default class InterpolationExample extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      startValue: new Animated.Value(0),
+      endValue: 1,
+      duration: 5000,
+    };
+  }
 
-UIManager.setLayoutAnimationEnabledExperimental &&
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-
-export default class App extends React.Component {
-  state = {
-    w: 100,
-    h: 100,
-  };
-
-  _onPress = () => {
-    // Animate the update
-    LayoutAnimation.spring();
-    this.setState({w: this.state.w + 15, h: this.state.h + 15})
+  componentDidMount() {
+    Animated.timing(this.state.startValue, {
+      toValue: this.state.endValue,
+      duration: this.state.duration,
+      useNativeDriver: true,
+    }).start();
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <View style={[styles.box, {width: this.state.w, height: this.state.h}]} />
-        <TouchableOpacity onPress={this._onPress}>
-          <View style={styles.button}>
-            <Text style={styles.buttonText}>Press me!</Text>
-          </View>
-        </TouchableOpacity>
+        {/*
+        <View komponentini anime etmek istersek "Attempted to assign to readonly property" hatasi aliriz
+        cunku anime edilebilir view'lar icin RN ekstra ayarlamalar yapmaktadir. 
+        */}
+        <Animated.View
+          style={[
+            styles.square,
+            {
+              opacity: this.state.startValue,
+              transform: [
+                {
+                  translateY: this.state.startValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [300, 0], // 0 : 150, 0.5 : 75, 1 : 0
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
       </View>
     );
   }
@@ -41,23 +49,13 @@ export default class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
-  box: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'red',
-  },
-  button: {
-    backgroundColor: 'black',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    marginTop: 15,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  square: {
+    height: 50,
+    width: 50,
+    backgroundColor: 'green',
   },
 });
