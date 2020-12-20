@@ -29,7 +29,7 @@ const App = () => {
           style={styles.scrollViewStyle}
           scrollEventThrottle={16}
           showsHorizontalScrollIndicator={false}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }])}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {useNativeDriver: true})}
           scrollEventThrottle={1}
         >
           <View style={styles.tabButtonContainer}>
